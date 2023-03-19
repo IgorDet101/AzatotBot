@@ -1,24 +1,30 @@
 package searchengine.controllers;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import searchengine.dto.statistics.StatisticsResponse;
+import searchengine.services.IndexService;
 import searchengine.services.StatisticsService;
 
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class ApiController {
 
     private final StatisticsService statisticsService;
 
-    public ApiController(StatisticsService statisticsService) {
-        this.statisticsService = statisticsService;
-    }
+    private final IndexService indexService;
 
     @GetMapping("/statistics")
     public ResponseEntity<StatisticsResponse> statistics() {
         return ResponseEntity.ok(statisticsService.getStatistics());
+    }
+
+    @GetMapping("/startIndexing")
+    public ResponseEntity startIndexing(){
+        return ResponseEntity.ok(indexService.startIndexing());
     }
 }
