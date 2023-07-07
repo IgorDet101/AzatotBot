@@ -12,17 +12,18 @@ import java.util.*;
 import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
+import static java.lang.Thread.currentThread;
 import static java.lang.Thread.sleep;
 
 public class SiteCrawler extends RecursiveAction {
     private static final Set<String> passedAddressSet = Collections.synchronizedSet(new HashSet<>());
-//    private static final Set<String> addedLemmas = Collections.synchronizedSet(new HashSet<>());
+    //    private static final Set<String> addedLemmas = Collections.synchronizedSet(new HashSet<>());
     private final Site site;
     private final String rootUrl;
     private final String fullUrl;
     private final String shortUrl;
     private int connectionStatusCode;
-//    private final Lemmatizer lemmatizer = new Lemmatizer();
+    //    private final Lemmatizer lemmatizer = new Lemmatizer();
     private final PageRepository pageRepository;
 //    private CriteriaBuilder builder;
 
@@ -48,13 +49,13 @@ public class SiteCrawler extends RecursiveAction {
                     .referrer("http://www.google.com");
             connectionStatusCode = connection.execute().statusCode();
         } catch (InterruptedException | IOException e) {
-            e.printStackTrace();
         }
         return connection;
     }
 
     @Override
     protected void compute() {
+
         Connection connection = getConnection();
 
         Document doc = null;
@@ -67,8 +68,8 @@ public class SiteCrawler extends RecursiveAction {
             return;
         }
 
-        site.setStatusTime(new Date());
         Page page = new Page();
+        site.setStatusTime(new Date());
         page.setPath(shortUrl);
         page.setSite(site);
         page.setCode(connectionStatusCode);
