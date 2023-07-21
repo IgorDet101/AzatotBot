@@ -5,17 +5,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import javax.persistence.Index;
 
 @Entity
-@Table(name = "Pages",
-        indexes = @Index(name = "path_index", columnList = "site_id, path", unique = true))
+@Table(name = "Lemmas")
 @Getter
 @Setter
 @NoArgsConstructor
-public class Page {
+public class Lemma {
     @Id
-    @GeneratedValue(strategy =  GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @ManyToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
@@ -23,11 +21,9 @@ public class Page {
     private Site site;
 
     @Column(nullable = false)
-    private String path;
+    private String lemma;
 
     @Column(nullable = false)
-    private int code;
+    private int frequency;
 
-    @Column(nullable = false, columnDefinition = "mediumtext")
-    private String content;
 }

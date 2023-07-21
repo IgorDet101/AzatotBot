@@ -6,6 +6,8 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "Sites")
@@ -32,4 +34,7 @@ public class Site {
 
     @Column(nullable = false)
     private String name;
+
+    @OneToMany(mappedBy = "Sites", fetch = FetchType.LAZY)
+    private Set<Page> pages = new HashSet<>();
 }

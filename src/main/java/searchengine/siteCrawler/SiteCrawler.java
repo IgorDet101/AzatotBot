@@ -23,7 +23,7 @@ public class SiteCrawler extends RecursiveAction {
     private final String fullUrl;
     private final String shortUrl;
     private int connectionStatusCode;
-    //    private final Lemmatizer lemmatizer = new Lemmatizer();
+//        private final Lemmatizer lemmatizer = new Lemmatizer();
     private final PageRepository pageRepository;
 //    private CriteriaBuilder builder;
 
