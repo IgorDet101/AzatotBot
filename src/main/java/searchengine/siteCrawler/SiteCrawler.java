@@ -49,6 +49,7 @@ public class SiteCrawler extends RecursiveAction {
                     .referrer("http://www.google.com");
             connectionStatusCode = connection.execute().statusCode();
         } catch (InterruptedException | IOException e) {
+            return connection;
         }
         return connection;
     }
@@ -74,6 +75,7 @@ public class SiteCrawler extends RecursiveAction {
         page.setSite(site);
         page.setCode(connectionStatusCode);
         page.setContent(doc.html());
+        site.getPages().add(page);
         pageRepository.save(page);
 
         createSubTask(doc);

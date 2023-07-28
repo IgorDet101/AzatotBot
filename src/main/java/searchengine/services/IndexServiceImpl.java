@@ -1,6 +1,8 @@
 package searchengine.services;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Transaction;
+import org.hibernate.engine.transaction.internal.TransactionImpl;
 import org.springframework.stereotype.Service;
 import searchengine.model.Site;
 import searchengine.config.SitesList;
@@ -10,6 +12,9 @@ import searchengine.repositories.PageRepository;
 import searchengine.repositories.SiteRepository;
 import searchengine.siteCrawler.SiteCrawler;
 
+import javax.persistence.Entity;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import java.util.Date;
 import java.util.concurrent.ForkJoinPool;
 
@@ -24,11 +29,9 @@ public class IndexServiceImpl implements IndexService {
 
     @Override
     public IndexingResponse startIndexing() {
-        pageRepository.deleteAll();
         siteRepository.deleteAll();
 
-        for(Site site : rawSitesList.getSites()){
-
+        for (Site site : rawSitesList.getSites()) {
             site.setStatus(Status.INDEXING);
             site.setStatusTime(new Date());
             siteRepository.save(site);
@@ -41,8 +44,8 @@ public class IndexServiceImpl implements IndexService {
     @Override
     public boolean stopIndexing() {
         pool.shutdownNow();
-        for (Site site : siteRepository.findAll()){
-            if (site.getStatus() == (Status.INDEXING)){
+        for (Site site : siteRepository.findAll()) {
+            if (site.getStatus() == (Status.INDEXING)) {
                 site.setStatus(Status.FAILED);
                 site.setLastError("Индексация остановлена пользователем");
                 siteRepository.save(site);

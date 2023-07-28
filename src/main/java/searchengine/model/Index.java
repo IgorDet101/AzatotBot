@@ -7,7 +7,7 @@ import lombok.Setter;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "index")
+@Table(name = "Find_Index")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,9 +20,10 @@ public class Index {
     @JoinColumn(name = "page_id", nullable = false)
     private Page page;
 
-    @Column(nullable = false)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "lemma_id", nullable = false)
     private Lemma lemma;
 
-    @Column(nullable = false)
+    @Column(name = "find_rank", nullable = false)
     private float rank;
 }

@@ -18,9 +18,6 @@
             <id>skillbox-gitlab</id>
             <url>https://gitlab.skillbox.ru/api/v4/projects/263574/packages/maven</url>
         </repository>
-        <repository>
-            <id>jboss-maven2-release-repository</id>
-        </repository>
     </repositories>
 
     <parent>
