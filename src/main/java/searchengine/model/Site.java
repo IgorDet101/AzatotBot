@@ -5,10 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "Sites")
@@ -17,7 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class Site {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     @Column(nullable = false)
@@ -38,4 +35,15 @@ public class Site {
 
     @OneToMany(mappedBy = "site", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private Set<Page> pages = new HashSet<>();
+
+    @OneToMany(mappedBy = "site", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private Set<Lemma> lemmas = new HashSet<>();
+
+    protected void addPage (Page page){
+        getPages().add(page);
+    }
+
+    protected void addLemma (Lemma lemma){
+        getLemmas().add(lemma);
+    }
 }

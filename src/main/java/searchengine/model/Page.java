@@ -6,6 +6,8 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.persistence.Index;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "Pages",
@@ -15,7 +17,7 @@ import javax.persistence.Index;
 @NoArgsConstructor
 public class Page {
     @Id
-    @GeneratedValue(strategy =  GenerationType.IDENTITY)
+    @GeneratedValue(strategy =  GenerationType.AUTO)
     private int id;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -30,4 +32,16 @@ public class Page {
 
     @Column(nullable = false, columnDefinition = "mediumtext")
     private String content;
+
+    @OneToMany(mappedBy = "page", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private Set<searchengine.model.Index> indexes = new HashSet<>();
+
+    public void setSite (Site site){
+        this.site = site;
+        site.addPage(this);
+    }
+
+    protected void addIndex (searchengine.model.Index index){
+        getIndexes().add(index);
+    }
 }

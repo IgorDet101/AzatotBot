@@ -12,7 +12,6 @@ import java.util.*;
 import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
-import static java.lang.Thread.currentThread;
 import static java.lang.Thread.sleep;
 
 public class SiteCrawler extends RecursiveAction {
@@ -23,20 +22,19 @@ public class SiteCrawler extends RecursiveAction {
     private final String fullUrl;
     private final String shortUrl;
     private int connectionStatusCode;
-//        private final Lemmatizer lemmatizer = new Lemmatizer();
+    //        private final Lemmatizer lemmatizer = new Lemmatizer();
     private final PageRepository pageRepository;
-//    private CriteriaBuilder builder;
 
     public SiteCrawler(Site site, String shortUrl, PageRepository pageRepository) {
         this.site = site;
         rootUrl = site.getUrl();
         fullUrl = rootUrl + shortUrl;
         this.shortUrl = shortUrl;
+        this.pageRepository = pageRepository;
 
-        if (shortUrl == "/") {
+        if (shortUrl.equals("/")) {
             passedAddressSet.add(shortUrl);
         }
-        this.pageRepository = pageRepository;
     }
 
     private Connection getConnection() {
@@ -60,12 +58,13 @@ public class SiteCrawler extends RecursiveAction {
         Connection connection = getConnection();
 
         Document doc = null;
-        try {
-            doc = connection.get();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (doc == null) {
+        if (connection != null) {
+            try {
+                doc = connection.get();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
             return;
         }
 
@@ -75,7 +74,7 @@ public class SiteCrawler extends RecursiveAction {
         page.setSite(site);
         page.setCode(connectionStatusCode);
         page.setContent(doc.html());
-        site.getPages().add(page);
+
         pageRepository.save(page);
 
         createSubTask(doc);
@@ -174,6 +173,10 @@ public class SiteCrawler extends RecursiveAction {
                 task.join();
             }
         }
+    }
+
+    public static void clearAddressSet() {
+        passedAddressSet.clear();
     }
 
 
