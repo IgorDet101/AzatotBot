@@ -17,7 +17,7 @@ spring:
 
 indexing-settings:
   rawSites:
-    - url: https://www.playback.ru
-      name: PlayBack.Ru
     - url: https://www.svetlovka.ru
       name: Светловка
+    - url: https://www.playback.ru
+      name: PlayBack.Ru

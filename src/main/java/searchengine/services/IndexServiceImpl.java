@@ -39,12 +39,14 @@ public class IndexServiceImpl implements IndexService {
         }
 
         siteRepository.deleteAll();
+        SiteCrawler.clearAddressSet();
         isIndexing = true;
         for (RawSite rawSite : rawSitesList.getRawSites()) {
             Site site = createNewSite(rawSite.getName(), rawSite.getUrl());
             siteRepository.save(site);
-            pool.invoke(new SiteCrawler(site, "/", pageRepository));
+            pool.invoke(new SiteCrawler(site, "/", pageRepository, lemmaRepository, indexRepository));
             site.setStatus(Status.INDEXED);
+            siteRepository.save(site);
         }
         response.setResult(true);
         isIndexing = false;
@@ -67,7 +69,6 @@ public class IndexServiceImpl implements IndexService {
                 siteRepository.save(site);
             }
         }
-        SiteCrawler.clearAddressSet();
         isIndexing = false;
         response.setResult(true);
         return response;
@@ -96,10 +97,10 @@ public class IndexServiceImpl implements IndexService {
         }
 
         if (match) {
-            indexingResponse.setResult(match);
+            indexingResponse.setResult(true);
             return indexingResponse;
         } else {
-            indexingResponse.setResult(match);
+            indexingResponse.setResult(false);
             indexingResponse.setError("Данная страница находится за пределами сайтов, указанных в конфигурационном файле");
             return indexingResponse;
         }

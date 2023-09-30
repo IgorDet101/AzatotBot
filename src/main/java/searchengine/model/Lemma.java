@@ -28,7 +28,7 @@ public class Lemma {
     @Column(nullable = false)
     private int frequency;
 
-    @OneToMany(mappedBy = "lemma", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "lemma", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     private Set<Index> indexes = new HashSet<>();
 
     public void setSite(Site site) {

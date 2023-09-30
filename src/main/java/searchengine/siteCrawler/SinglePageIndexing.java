@@ -23,14 +23,19 @@ public class SinglePageIndexing implements Runnable {
     private final Site site;
     private final String fullUrl;
     private final String shortUrl;
-    private int connectionStatusCode;
+    private Document document;
     private final Lemmatizer lemmatizer = new Lemmatizer();
     private final PageRepository pageRepository;
     private final LemmaRepository lemmaRepository;
     private final IndexRepository indexRepository;
 
     public SinglePageIndexing(Site site, String shortUrl, PageRepository pageRepository, LemmaRepository lemmaRepository, IndexRepository indexRepository) {
+        this(site, shortUrl, null, pageRepository, lemmaRepository, indexRepository);
+    }
+
+    public SinglePageIndexing(Site site, String shortUrl, Document document, PageRepository pageRepository, LemmaRepository lemmaRepository, IndexRepository indexRepository) {
         this.site = site;
+        this.document = document;
         String rootUrl = site.getUrl();
         fullUrl = rootUrl + shortUrl;
         this.shortUrl = shortUrl;
@@ -39,13 +44,12 @@ public class SinglePageIndexing implements Runnable {
         this.indexRepository = indexRepository;
     }
 
-    private Connection getConnection() throws InterruptedException, IOException {
+    private Connection getConnection() throws InterruptedException {
         sleep(500);
         Connection connection = Jsoup.connect(fullUrl)
                 .userAgent("Mozilla/5.0 (Windows; U; WindowsNT" +
                         "5.1; en-US; rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6")
                 .referrer("http://www.google.com");
-        connectionStatusCode = connection.execute().statusCode();
 
         return connection;
     }
@@ -59,13 +63,17 @@ public class SinglePageIndexing implements Runnable {
 
     @Override
     public void run() {
-        Document document = null;
+        int connectionStatusCode = 0;
         try {
-            Connection connection = getConnection();
-            document = getDocument(connection);
+            if (document == null) {
+                Connection connection = getConnection();
+                document = getDocument(connection);
+            }
+            connectionStatusCode = document.connection().execute().statusCode();
         } catch (Exception e) {
             e.printStackTrace();
         }
+
 
         Page page = createPage();
         page.setPath(shortUrl);
@@ -74,7 +82,9 @@ public class SinglePageIndexing implements Runnable {
         page.setContent(document.html());
 
         pageRepository.save(page);
-        getLemmasAndIndex(page);
+        if (connectionStatusCode == 200) {
+            getLemmasAndIndex(page);
+        }
     }
 
     private Page createPage() {
